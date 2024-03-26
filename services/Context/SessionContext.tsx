@@ -1,11 +1,16 @@
 import React, { createContext, useContext, useState, } from "react";
 import type { ReactNode } from 'react';
+import { supabase } from "../Supabase/connection";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 interface SessionContextProps {
+  supabaseClient: SupabaseClient<any, "public", any>,
   showTranscriptionsList: boolean;
   toggleTranscriptionsList: () => void;
+  showSelectedTranscription: () => void;
   showMenu: boolean;
   setShowMenu: (show: boolean) => void;
+  closeSelectedTranscription: () => void;
   showTranscription: boolean;
   setShowTranscription: (show: boolean) => void;
   toggleShowMenu: () => void;
@@ -37,12 +42,23 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [showTranscription, setShowTranscription] = useState(false); // Estado para mostrar y ocultar una transcripciones
   const [showMenu, setShowMenu] = useState(false); // Estado para mostrar y ocultar el menú desplegable
   const [showFileDropzone, setShowFileDropzone] = useState(true); // Estado para mostrar y ocultar la zona para subir archivos
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
+  const supabaseClient = supabase;
 
   // Manejar el cmabio de estado para mostrar y ocultar la zona para subir archivos teniendo en cuenta el archivo subido
   const closeFilePreview = () => {
     setShowFileDropzone(true);
     setSelectedFile(null);
+  };
+
+  const showSelectedTranscription = () => {
+    setShowTranscription(true);
+    setSelectedFile(null);
+    setShowFileDropzone(false);
+  };
+
+  const closeSelectedTranscription = () => {
+    setShowTranscription(false);
   };
 
   // Manejar el cmabio de estado para mostrar y ocultar la lista de transcripciones
@@ -61,12 +77,15 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   };
 
   const value: SessionContextProps = {
+    supabaseClient,
     showTranscriptionsList,
     toggleTranscriptionsList,
     showMenu,
     setShowMenu,
     showTranscription,
+    closeSelectedTranscription,
     setShowTranscription,
+    showSelectedTranscription,
     toggleShowMenu,
     showFileDropzone,
     toggleShowFileDropzone,

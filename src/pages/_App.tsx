@@ -1,10 +1,10 @@
 import { SessionProvider } from "../../services/Context/SessionContext";
 
 // Componentes
-import HeaderContent from "./HeaderContent";
-import AsideContent from "./AsideContent";
-import DropdownMenu from "./DropdownMenu";
-import MainContent from "./MainContent";
+import HeaderContent from "../components/HeaderContent";
+import AsideContent from "../components/AsideContent";
+import DropdownMenu from "../components/DropdownMenu";
+import MainContent from "../components/MainContent";
 
 export default function App() {
     return (

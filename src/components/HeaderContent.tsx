@@ -3,15 +3,23 @@ import History from "../icons/History";
 import MenuIcon from "../icons/MenuIcon";
 import { useEffect } from "react";
 import { useSession } from "../../services/Context/SessionContext";
+import { useNavigate } from 'react-router-dom';
 
 export default function HeaderContent() {
+    const navigate = useNavigate();
     const {
         toggleTranscriptionsList,
         showTranscriptionsList,
         toggleShowMenu,
         showMenu,
-        closeFilePreview
+        closeFilePreview,
+        closeSelectedTranscription,
+        supabaseClient,
     } = useSession();
+
+    const goToSignIn = () => {
+        navigate('inicioSesion')
+    };
 
     // Ajustar el layout dependiendo de la lista de transcripciones
     useEffect(() => {
@@ -30,7 +38,7 @@ export default function HeaderContent() {
             <div className="h-full flex justify-between items-center px-4">
                 {/* Nueva transcripción */}
                 <section>
-                    <button type="button" onClick={closeFilePreview} className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1">
+                    <button type="button" onClick={() => { closeFilePreview(); closeSelectedTranscription(); }} className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1">
                         <span className="sr-only">Generar nueva transcripción</span>
                         <span>Nueva transcripción</span><NewTranscipt />
                     </button>
@@ -44,7 +52,7 @@ export default function HeaderContent() {
                                 <span>Transcripciones</span><History width={15} height={15} />
                             </button>
                         )}
-                        <button type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">Acceder</button>
+                        <button onClick={goToSignIn} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">Acceder</button>
                     </section>
                     {!showMenu && (
                         <button onClick={toggleShowMenu} className="menu-icon-button hidden hover:bg-[#333] rounded-lg p-2" title="Menú desplegable">

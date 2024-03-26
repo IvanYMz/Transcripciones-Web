@@ -77,7 +77,7 @@ const FileDropZone = ({ toggleShowFileDropzone, showFileDropzone, setSelectedFil
           // onDragOver para permitir el drop
           onDragOver={(e) => e.preventDefault()}
         >
-          <div className="text-center relative">
+          <div className="text-center relative px-2">
             <h2 className="text-4xl font-bold mb-4">Transcribir Audio</h2>
             <p className="text-lg mb-6 font-normal">
               Sube tus archivos de audio y obtén transcripciones. Rápido y fácil.

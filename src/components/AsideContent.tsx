@@ -5,7 +5,7 @@ import { useSession } from "../../services/Context/SessionContext";
 
 
 export default function AsideContent() {
-    const { toggleTranscriptionsList, showTranscriptionsList } = useSession();
+    const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, showTranscription } = useSession();
     return (
         <>
             {showTranscriptionsList ? (
@@ -20,7 +20,7 @@ export default function AsideContent() {
                     </header>
                     {/* Lista de transcripciones */}
                     <section className="dark:bg-[#171717] rounded-lg w-full h-3/4">
-                        <TranscriptionsList />
+                        <TranscriptionsList showSelectedTranscription={showSelectedTranscription} showTranscription={showTranscription} />
                     </section>
                 </aside>
             ) : (

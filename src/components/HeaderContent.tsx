@@ -15,6 +15,7 @@ export default function HeaderContent() {
         closeFilePreview,
         closeSelectedTranscription,
         supabaseClient,
+        user,
     } = useSession();
 
     const goToSignIn = () => {
@@ -52,7 +53,11 @@ export default function HeaderContent() {
                                 <span>Transcripciones</span><History width={15} height={15} />
                             </button>
                         )}
-                        <button onClick={goToSignIn} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">Acceder</button>
+                        {user.role === 'authenticated' ? (
+                            <button onClick={() => {}} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">{user.email}</button>
+                        ) : (
+                            <button onClick={goToSignIn} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">Acceder</button>
+                        )}
                     </section>
                     {!showMenu && (
                         <button onClick={toggleShowMenu} className="menu-icon-button hidden hover:bg-[#333] rounded-lg p-2" title="Menú desplegable">

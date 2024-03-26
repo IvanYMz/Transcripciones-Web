@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useState, } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from 'react';
 import { supabase } from "../Supabase/connection";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+export interface User {
+  email: string | undefined;
+  id: string;
+  role: string;
+}
+
 interface SessionContextProps {
-  supabaseClient: SupabaseClient<any, "public", any>,
+  supabaseClient: SupabaseClient<any, "public", any>;
   showTranscriptionsList: boolean;
   toggleTranscriptionsList: () => void;
   showSelectedTranscription: () => void;
@@ -19,11 +25,11 @@ interface SessionContextProps {
   selectedFile: File | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
   closeFilePreview: () => void;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
+  user: User;
 }
 
-const SessionContext = createContext<SessionContextProps | undefined>(
-  undefined
-);
+const SessionContext = createContext<SessionContextProps | undefined>(undefined);
 
 export const useSession = (): SessionContextProps => {
   const context = useContext(SessionContext);
@@ -42,10 +48,37 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [showTranscription, setShowTranscription] = useState(false); // Estado para mostrar y ocultar una transcripciones
   const [showMenu, setShowMenu] = useState(false); // Estado para mostrar y ocultar el menú desplegable
   const [showFileDropzone, setShowFileDropzone] = useState(true); // Estado para mostrar y ocultar la zona para subir archivos
+  const [user, setUser] = useState<User>({
+    email: '',
+    id: '',
+    role: '',
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
   const supabaseClient = supabase;
 
-  // Manejar el cmabio de estado para mostrar y ocultar la zona para subir archivos teniendo en cuenta el archivo subido
+  useEffect(() => {
+    const getSupabaseUser = async () => {
+      let session = await supabase.auth.getUser();
+      if (session.data.user?.role === 'authenticated') {
+        // Inicializar el estado user con los datos de session.user
+        setUser({
+          email: session.data.user.email,
+          id: session.data.user.id,
+          role: session.data.user.role
+        });
+      } else {
+        setUser({
+          email: 'NONE',
+          id: 'NONE',
+          role: 'NONE'
+        });
+      }
+    };
+
+    getSupabaseUser();
+  }, []);
+
+  // Manejar el cambio de estado para mostrar y ocultar la zona para subir archivos teniendo en cuenta el archivo subido
   const closeFilePreview = () => {
     setShowFileDropzone(true);
     setSelectedFile(null);
@@ -61,7 +94,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     setShowTranscription(false);
   };
 
-  // Manejar el cmabio de estado para mostrar y ocultar la lista de transcripciones
+  // Manejar el cambio de estado para mostrar y ocultar la lista de transcripciones
   const toggleTranscriptionsList = () => {
     setShowTranscriptionsList(!showTranscriptionsList);
   };
@@ -92,9 +125,13 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     selectedFile,
     setSelectedFile,
     closeFilePreview,
+    setUser,
+    user,
   };
 
   return (
-    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+    <SessionContext.Provider value={value}>
+      {children}
+    </SessionContext.Provider>
   );
 };

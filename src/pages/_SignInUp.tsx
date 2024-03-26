@@ -5,7 +5,7 @@ import { useSession } from '../../services/Context/SessionContext';
 
 
 export default function SignInUp() {
-    const { supabaseClient } = useSession();
+    const { supabaseClient, setUser } = useSession();
     const navigate = useNavigate();
 
     supabaseClient.auth.onAuthStateChange(async (event) => {

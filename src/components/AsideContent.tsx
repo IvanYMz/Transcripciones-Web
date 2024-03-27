@@ -5,11 +5,12 @@ import { useSession } from "../../services/Context/SessionContext";
 
 
 export default function AsideContent() {
-    const { 
-        toggleTranscriptionsList, showTranscriptionsList, 
-        showSelectedTranscription, showTranscription, 
-        toggleShowMenu, showMenu, 
+    const {
+        toggleTranscriptionsList, showTranscriptionsList,
+        showSelectedTranscription, showTranscription,
+        toggleShowMenu, showMenu,
         user,
+        supabaseClient,
     } = useSession();
     return (
         <>
@@ -25,7 +26,14 @@ export default function AsideContent() {
                     </header>
                     {/* Lista de transcripciones */}
                     <section className="dark:bg-[#171717] rounded-lg w-full h-3/4">
-                        <TranscriptionsList showSelectedTranscription={showSelectedTranscription} showTranscription={showTranscription} toggleShowMenu={toggleShowMenu} showMenu={showMenu} user={user} />
+                        <TranscriptionsList
+                            showSelectedTranscription={showSelectedTranscription}
+                            showTranscription={showTranscription}
+                            toggleShowMenu={toggleShowMenu}
+                            showMenu={showMenu}
+                            user={user}
+                            supabaseClient={supabaseClient}
+                        />
                     </section>
                 </aside>
             ) : (

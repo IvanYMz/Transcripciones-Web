@@ -9,7 +9,10 @@ export default function MainContent() {
         selectedFile,
         showFileDropzone,
         showTranscription,
+        supabaseClient,
+        user
     } = useSession();
+
     return (
         <main className="[grid-area:main] bg-[#f5f5fa] dark:bg-[#212121] overflow-hidden">
             <div className="flex justify-center items-center h-full">
@@ -22,6 +25,8 @@ export default function MainContent() {
                         setSelectedFile={setSelectedFile}
                         selectedFile={selectedFile}
                         closeFilePreview={closeFilePreview}
+                        supabaseClient={supabaseClient}
+                        user={user}
                     />
                 )}
             </div>

@@ -1,12 +1,32 @@
 import CloseIcon from "../icons/CloseIcon";
 import UploadIcon from "../icons/UploadIcon";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { User } from "../../services/Context/SessionContext";
 
 interface PlayerProps {
     closeFilePreview: () => void;
     selectedFile: File | null;
+    supabaseClient: SupabaseClient<any, "public", any>;
+    user: User;
 }
 
-export default function Player({ closeFilePreview, selectedFile }: PlayerProps) {
+export default function Player({ closeFilePreview, selectedFile, supabaseClient, user }: PlayerProps) {
+    const uploadFile = async () => {
+        console.log(user);
+        if (selectedFile) {
+            const nombreArchivoConExtension: string = selectedFile.name;
+            const ultimoPuntoIndex: number = nombreArchivoConExtension.lastIndexOf('.');
+            const nombreArchivoSinExtension: string = ultimoPuntoIndex !== -1 ? nombreArchivoConExtension.substring(0, ultimoPuntoIndex) : nombreArchivoConExtension;
+            const { data, error } = await supabaseClient.storage
+                .from('bucketsazo')
+                .upload(user.id + '/' + nombreArchivoSinExtension + '/' + selectedFile.name, selectedFile)
+            if (error) {
+                console.error(error);
+            } 
+            console.log(data);
+        }
+    };
+
     if (!selectedFile) {
         return null;
     }
@@ -33,7 +53,7 @@ export default function Player({ closeFilePreview, selectedFile }: PlayerProps) 
                     </audio>
                 </div>
                 <footer className="flex items-center justify-center w-full">
-                    <button onClick={closeFilePreview} className="flex items-center justify-center font-semibold text-lg text-[#222] px-4 py-2 rounded-full bg-[#fefefe] hover:bg-[#171717] hover:shadow-white hover:text-[#fefefe] transition duration-300">
+                    <button onClick={uploadFile} className="flex items-center justify-center font-semibold text-lg text-[#222] px-4 py-2 rounded-full bg-[#fefefe] hover:bg-[#171717] hover:shadow-white hover:text-[#fefefe] transition duration-300">
                         <UploadIcon />Subir
                     </button>
                 </footer>

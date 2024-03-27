@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import type { ReactNode } from 'react';
 import { supabase } from "../Supabase/connection";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -7,6 +7,7 @@ export interface User {
   email: string | undefined;
   id: string;
   role: string;
+  
 }
 
 interface SessionContextProps {
@@ -27,6 +28,11 @@ interface SessionContextProps {
   closeFilePreview: () => void;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   user: User;
+  signOutRef: React.RefObject<HTMLDivElement>;
+  showSignOutOption: boolean;
+  handleClickOutside: (event: MouseEvent) => void;
+  userSignOut: () => void;
+  toggleSignOutOptions: () => void;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
@@ -48,6 +54,8 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [showTranscription, setShowTranscription] = useState(false); // Estado para mostrar y ocultar una transcripciones
   const [showMenu, setShowMenu] = useState(false); // Estado para mostrar y ocultar el menú desplegable
   const [showFileDropzone, setShowFileDropzone] = useState(true); // Estado para mostrar y ocultar la zona para subir archivos
+  const signOutRef = useRef<HTMLDivElement>(null);
+  const [showSignOutOption, setShowSignOutOption] = useState(false);
   const [user, setUser] = useState<User>({
     email: '',
     id: '',
@@ -56,27 +64,51 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
   const supabaseClient = supabase;
 
-  useEffect(() => {
-    const getSupabaseUser = async () => {
-      let session = await supabase.auth.getUser();
-      if (session.data.user?.role === 'authenticated') {
-        // Inicializar el estado user con los datos de session.user
-        setUser({
-          email: session.data.user.email,
-          id: session.data.user.id,
-          role: session.data.user.role
-        });
-      } else {
-        setUser({
-          email: 'NONE',
-          id: 'NONE',
-          role: 'NONE'
-        });
-      }
-    };
+  const getSupabaseUser = async () => {
+    let session = await supabase.auth.getUser();
+    if (session.data.user?.role === 'authenticated') {
+      // Inicializar el estado user con los datos de session.user
+      setUser({
+        email: session.data.user.email,
+        id: session.data.user.id,
+        role: session.data.user.role
+      });
+    } else {
+      setUser({
+        email: 'NONE',
+        id: 'NONE',
+        role: 'NONE'
+      });
+    }
+  };
 
+  useEffect(() => {
     getSupabaseUser();
   }, []);
+
+  const avrLasCarpetas = async () => {
+    
+  };
+
+  const refreshMain = () => {
+    window.location.reload();
+  };
+
+  const userSignOut = async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    refreshMain();
+  };
+
+  const toggleSignOutOptions = () => {
+    setShowSignOutOption(!showSignOutOption);
+  };
+
+  // Función para cerrar el menú cuando se hace clic fuera de él
+  const handleClickOutside = (event: MouseEvent) => {
+    if (signOutRef.current && !signOutRef.current.contains(event.target as Node)) {
+      setShowSignOutOption(false);
+    }
+  };
 
   // Manejar el cambio de estado para mostrar y ocultar la zona para subir archivos teniendo en cuenta el archivo subido
   const closeFilePreview = () => {
@@ -110,6 +142,11 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   };
 
   const value: SessionContextProps = {
+    toggleSignOutOptions,
+    userSignOut,
+    handleClickOutside,
+    signOutRef,
+    showSignOutOption,
     supabaseClient,
     showTranscriptionsList,
     toggleTranscriptionsList,

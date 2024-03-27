@@ -6,7 +6,19 @@ import SignIn from "../icons/SignIn";
 import TranscriptionsList from "./TranscriptionsList";
 
 export default function DropdownMenu() {
-    const { toggleShowMenu, showMenu, setShowMenu, showSelectedTranscription, showTranscription, user } = useSession();
+    const { 
+        toggleShowMenu, 
+        showMenu, 
+        setShowMenu, 
+        showSelectedTranscription, 
+        showTranscription, 
+        user,
+        handleClickOutside,
+        showSignOutOption,
+        signOutRef,
+        userSignOut,
+        toggleSignOutOptions,
+    } = useSession();
     const navigate = useNavigate();
 
     const goToSignIn = () => {
@@ -24,8 +36,11 @@ export default function DropdownMenu() {
 
         window.addEventListener('resize', handleResize);
 
+        document.addEventListener('mousedown', handleClickOutside);
+
         // Limpieza del event listener cuando el componente se desmonta
         return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('resize', handleResize);
         };
     }, []);
@@ -55,7 +70,16 @@ export default function DropdownMenu() {
                         </section>
                         <footer className="flex justify-end">
                             {user.role === 'authenticated' ? (
-                                <button onClick={() => {}} type="button" className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2">{user.email}</button>
+                                 <>
+                                 {showSignOutOption && (
+                                     <div ref={signOutRef} className="absolute right-4 bottom-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">
+                                         <button onClick={userSignOut} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
+                                             <span>Cerrar sesión</span>
+                                         </button>
+                                     </div>
+                                 )}
+                                <button onClick={toggleSignOutOptions} type="button" className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2">{user.email}</button> 
+                             </>
                             ) : (
                                 <button onClick={goToSignIn} className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2" >
                                     <span>Inicar sesión</span><SignIn width={18} height={18} />

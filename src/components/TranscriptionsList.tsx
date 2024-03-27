@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import EditIcon from '../icons/EditIcon';
 import DeleteIcon from '../icons/DeleteIcon';
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import type { User } from '../../services/Context/SessionContext';
 
 interface TranscriptionViewProps {
@@ -10,13 +12,18 @@ interface TranscriptionViewProps {
     toggleShowMenu: () => void;
     showMenu: boolean;
     user: User;
+    supabaseClient: SupabaseClient<any, "public", any>;
 }
 
-const TranscriptionsList = ({ showSelectedTranscription, showTranscription, toggleShowMenu, showMenu, user }: TranscriptionViewProps) => {
-    const transcriptions = [':('];
+const TranscriptionsList = ({ showSelectedTranscription, showTranscription, toggleShowMenu, showMenu, user, supabaseClient }: TranscriptionViewProps) => {
+    const transcriptions = ['pito']
 
     const [selectedTranscription, setSelectedTranscription] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const fetchUseerTranscripts = async () => {
+
+    };
 
     // Función para manejar la selección de una transcripción
     const handleTranscriptionSelect = (transcription: string) => {
@@ -29,6 +36,25 @@ const TranscriptionsList = ({ showSelectedTranscription, showTranscription, togg
             setSelectedTranscription(null);
         }
     };
+
+    const listFolders = async () => {
+        if (user.id) {
+            const { data, error } = await supabaseClient
+                .storage
+                .from('bucketsazo')
+                .list(user.id, {
+                    limit: 100,
+                    offset: 0,
+                    sortBy: { column: 'name', order: 'asc' },
+                })
+            console.error(error);
+            console.log(data);
+        }
+    };
+
+    useEffect(() => {
+        listFolders();
+    }, [user.id]);
 
     // Agregar el listener para cerrar el menú cuando se hace clic fuera de él
     useEffect(() => {

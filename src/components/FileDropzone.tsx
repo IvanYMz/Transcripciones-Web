@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import Player from './Player';
-
+import { useSession } from '../../services/Context/SessionContext';
 import type { User } from '../../services/Context/SessionContext';
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-interface FileDropzoneProps {
-  toggleShowFileDropzone: () => void;
-  closeFilePreview: () => void;
-  showFileDropzone: boolean;
-  selectedFile: File | null;
-  setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
-  supabaseClient: SupabaseClient<any, "public", any>;
+interface FileDropZoneprops {
   user: User;
 }
 
-const FileDropZone = ({ toggleShowFileDropzone, showFileDropzone, setSelectedFile, selectedFile, closeFilePreview, supabaseClient, user}: FileDropzoneProps) => {
+const FileDropZone = ({ user }: FileDropZoneprops) => {
+  const {
+    toggleShowFileDropzone, showFileDropzone,
+    setSelectedFile, selectedFile, closeFilePreview,
+    supabaseClient, } = useSession();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const allowedExtensions: string[] = ['mp3', 'mp4', 'opus', 'awv'];
 

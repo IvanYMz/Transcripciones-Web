@@ -1,27 +1,41 @@
 import { useState, useRef, useEffect } from 'react';
+import { useSession } from '../../services/Context/SessionContext';
+import type { User } from '../../services/Context/SessionContext';
 import EditIcon from '../icons/EditIcon';
 import DeleteIcon from '../icons/DeleteIcon';
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-import type { User } from '../../services/Context/SessionContext';
-
-interface TranscriptionViewProps {
-    showSelectedTranscription: () => void;
-    showTranscription: boolean;
-    toggleShowMenu: () => void;
-    showMenu: boolean;
+interface TranscriptionsListProps {
     user: User;
-    supabaseClient: SupabaseClient<any, "public", any>;
+    showMenu: boolean;
+    showSelectedTranscription: () => void;
+    toggleShowMenu: () => void;
 }
 
-const TranscriptionsList = ({ showSelectedTranscription, showTranscription, toggleShowMenu, showMenu, user, supabaseClient }: TranscriptionViewProps) => {
-    const transcriptions = ['pito']
-
+const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, showMenu, }: TranscriptionsListProps) => {
+    const { supabaseClient } = useSession();
+    const [transcriptions, setTranscriptions] = useState<string[]>([]);
     const [selectedTranscription, setSelectedTranscription] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const fetchUseerTranscripts = async () => {
+    // Enlistar las transcripciones del usuario (****ENCONTRAR LA MEJOR FORMA Y EL MEJOR LUGAR PARA CARGAR ESTO****) 
+    const fetchUserTranscripts = async () => {
+        if (user.role === 1 /*1 === authenticated*/) {
+            const { data, error } = await supabaseClient
+                .storage
+                .from('bucketsazo')
+                .list(user.id, {
+                    limit: 100,
+                    offset: 0,
+                    sortBy: { column: 'name', order: 'asc' },
+                });
+
+            //console.error(error);
+
+            if (data) {
+                const namesArray: string[] = data.map(item => item.name);
+                setTranscriptions(namesArray); // Establece el estado con los nombres
+            }
+        }
 
     };
 
@@ -37,23 +51,8 @@ const TranscriptionsList = ({ showSelectedTranscription, showTranscription, togg
         }
     };
 
-    const listFolders = async () => {
-        if (user.id) {
-            const { data, error } = await supabaseClient
-                .storage
-                .from('bucketsazo')
-                .list(user.id, {
-                    limit: 100,
-                    offset: 0,
-                    sortBy: { column: 'name', order: 'asc' },
-                })
-            console.error(error);
-            console.log(data);
-        }
-    };
-
     useEffect(() => {
-        listFolders();
+        fetchUserTranscripts();
     }, [user.id]);
 
     // Agregar el listener para cerrar el menú cuando se hace clic fuera de él
@@ -67,7 +66,7 @@ const TranscriptionsList = ({ showSelectedTranscription, showTranscription, togg
     return (
         <div className="text-[#fefefe] flex flex-col justify-between h-full shadow-xl">
             <section className="h-full overflow-y-auto pr-1 p-2">
-                {(user.role === 'authenticated') && (
+                {(user.role === 1 /*1 === authenticated*/) ? (
                     <ul className="flex flex-col gap-2 pr-2 h-full">
                         {transcriptions.map((transcription, index) => (
                             <li key={index} className="relative">
@@ -96,8 +95,7 @@ const TranscriptionsList = ({ showSelectedTranscription, showTranscription, togg
                             </li>
                         ))}
                     </ul>
-                )}
-                {(user.role === 'NONE') && (
+                ) : (
                     <div className='flex flex-col text-center justify-center h-full w-full px-2'>
                         <h2 className="text-3xl font-bold mb-4">¡Inicia sesión!</h2>
                         <p className="text-lg mb-2 font-normal">

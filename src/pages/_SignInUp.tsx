@@ -5,7 +5,7 @@ import { useSession } from '../../services/Context/SessionContext';
 
 
 export default function SignInUp() {
-    const { supabaseClient } = useSession();
+    const { supabaseClient, } = useSession();
     const navigate = useNavigate();
 
     supabaseClient.auth.onAuthStateChange(async (event) => {
@@ -45,7 +45,6 @@ export default function SignInUp() {
         <div className='absolute z-10 h-full w-full flex justify-center items-center bg-[#212121]'>
             <Auth
                 supabaseClient={supabaseClient}
-                redirectTo={'https://supabase.com/docs/guides/auth/auth-helpers/auth-ui#import-the-auth-component'}
                 localization={signInUpConfig}
                 appearance={{ theme: ThemeSupa, style: authStyle }}
                 providers={[]}

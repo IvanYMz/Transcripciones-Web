@@ -1,18 +1,21 @@
 import { useEffect } from "react";
-import { useSession } from "../../services/Context/SessionContext";
+import { SessionProvider, useSession } from "../../services/Context/SessionContext";
 import { useNavigate } from 'react-router-dom';
+import type { User } from "../../services/Context/SessionContext";
 import CloseIcon from "../icons/CloseIcon";
 import SignIn from "../icons/SignIn";
 import TranscriptionsList from "./TranscriptionsList";
 
-export default function DropdownMenu() {
-    const { 
-        toggleShowMenu, 
-        showMenu, 
-        setShowMenu, 
-        showSelectedTranscription, 
-        showTranscription, 
-        user,
+interface DropdownMenuProps {
+    user: User;
+}
+
+export default function DropdownMenu({ user }: DropdownMenuProps) {
+    const {
+        showSelectedTranscription,
+        toggleShowMenu,
+        showMenu,
+        setShowMenu,
         handleClickOutside,
         showSignOutOption,
         signOutRef,
@@ -21,6 +24,7 @@ export default function DropdownMenu() {
     } = useSession();
     const navigate = useNavigate();
 
+    // Navegar al inicio de sesión
     const goToSignIn = () => {
         navigate('inicioSesion')
     };
@@ -60,26 +64,25 @@ export default function DropdownMenu() {
                             <h3 className="text-center text-sm text-slate-200 w-4/5 border-b border-[#333] py-2">Historial de transcripciones</h3>
                         </div>
                         <section className="overflow-y-auto h-full">
-                            <TranscriptionsList
-                                showSelectedTranscription={showSelectedTranscription}
-                                showTranscription={showTranscription}
-                                toggleShowMenu={toggleShowMenu}
-                                showMenu={showMenu}
-                                user={user}
-                            />
+                                <TranscriptionsList
+                                    user={user}
+                                    showSelectedTranscription={showSelectedTranscription}
+                                    toggleShowMenu={toggleShowMenu}
+                                    showMenu={showMenu}
+                                />
                         </section>
                         <footer className="flex justify-end">
-                            {user.role === 'authenticated' ? (
-                                 <>
-                                 {showSignOutOption && (
-                                     <div ref={signOutRef} className="absolute right-4 bottom-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">
-                                         <button onClick={userSignOut} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
-                                             <span>Cerrar sesión</span>
-                                         </button>
-                                     </div>
-                                 )}
-                                <button onClick={toggleSignOutOptions} type="button" className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2">{user.email}</button> 
-                             </>
+                            {user.role === 1 /*1 === authenticated*/ ? (
+                                <>
+                                    {showSignOutOption && (
+                                        <div ref={signOutRef} className="absolute right-4 bottom-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">
+                                            <button onClick={userSignOut} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
+                                                <span>Cerrar sesión</span>
+                                            </button>
+                                        </div>
+                                    )}
+                                    <button onClick={toggleSignOutOptions} type="button" className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2">{user.email}</button>
+                                </>
                             ) : (
                                 <button onClick={goToSignIn} className="flex items-center gap-4 hover:bg-[#333] rounded-lg px-2 py-1 mt-2" >
                                     <span>Inicar sesión</span><SignIn width={18} height={18} />

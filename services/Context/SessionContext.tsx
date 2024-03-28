@@ -1,35 +1,38 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
-import type { ReactNode } from 'react';
 import { supabase } from "../Supabase/connection";
+
+import type { ReactNode } from 'react';
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// Formato para el objeto user
 export interface User {
   email: string | undefined;
   id: string;
-  role: string;
-  
+  role: number;
 }
 
+// Props que se usarán en los componenetes
 interface SessionContextProps {
-  supabaseClient: SupabaseClient<any, "public", any>;
-  showTranscriptionsList: boolean;
-  toggleTranscriptionsList: () => void;
-  showSelectedTranscription: () => void;
+
   showMenu: boolean;
+  toggleShowMenu: () => void;
   setShowMenu: (show: boolean) => void;
-  closeSelectedTranscription: () => void;
   showTranscription: boolean;
   setShowTranscription: (show: boolean) => void;
-  toggleShowMenu: () => void;
+  showSelectedTranscription: () => void;
+  closeSelectedTranscription: () => void;
+  showTranscriptionsList: boolean;
+  toggleTranscriptionsList: () => void;
   showFileDropzone: boolean;
   toggleShowFileDropzone: () => void;
   selectedFile: File | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
   closeFilePreview: () => void;
-  setUser: React.Dispatch<React.SetStateAction<User>>;
   user: User;
   signOutRef: React.RefObject<HTMLDivElement>;
   showSignOutOption: boolean;
+  supabaseClient: SupabaseClient<any, "public", any>;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
   handleClickOutside: (event: MouseEvent) => void;
   userSignOut: () => void;
   toggleSignOutOptions: () => void;
@@ -54,51 +57,39 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [showTranscription, setShowTranscription] = useState(false); // Estado para mostrar y ocultar una transcripciones
   const [showMenu, setShowMenu] = useState(false); // Estado para mostrar y ocultar el menú desplegable
   const [showFileDropzone, setShowFileDropzone] = useState(true); // Estado para mostrar y ocultar la zona para subir archivos
-  const signOutRef = useRef<HTMLDivElement>(null);
-  const [showSignOutOption, setShowSignOutOption] = useState(false);
+  const [showSignOutOption, setShowSignOutOption] = useState(false); // Estado para mostrar y ocultar la opción de cerrar sesión
+  const signOutRef = useRef<HTMLDivElement>(null); // Referencia para el click fuera de la opción de cerrar sesión
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
+  const supabaseClient = supabase; // Acceso a supabase
+  // Inicializar el usuario
   const [user, setUser] = useState<User>({
     email: '',
     id: '',
-    role: '',
+    role: 0,
   });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
-  const supabaseClient = supabase;
 
-  const getSupabaseUser = async () => {
-    let session = await supabase.auth.getUser();
-    if (session.data.user?.role === 'authenticated') {
-      // Inicializar el estado user con los datos de session.user
-      setUser({
-        email: session.data.user.email,
-        id: session.data.user.id,
-        role: session.data.user.role
-      });
-    } else {
-      setUser({
-        email: 'NONE',
-        id: 'NONE',
-        role: 'NONE'
-      });
-    }
-  };
-
-  useEffect(() => {
-    getSupabaseUser();
-  }, []);
-
-  const avrLasCarpetas = async () => {
-    
-  };
-
+  // Recargar la página al cerrar sesión
   const refreshMain = () => {
     window.location.reload();
   };
 
+  // Cerrar sesión
   const userSignOut = async () => {
-    const { error } = await supabaseClient.auth.signOut();
-    refreshMain();
+    try {
+      let session = await supabaseClient.auth.getUser();
+      if (session.data.user?.role === 'authenticated') {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+          throw new Error(error.message);
+        }
+      }
+      refreshMain();
+    } catch (error) {
+      console.error('Ocurrió un error al cerrar sesión:', error);
+    }
   };
 
+  // Manejar la visibilidad de la opción para cerrar sesión
   const toggleSignOutOptions = () => {
     setShowSignOutOption(!showSignOutOption);
   };
@@ -116,12 +107,14 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     setSelectedFile(null);
   };
 
+  // Mostrar la transcripción seleccionada
   const showSelectedTranscription = () => {
     setShowTranscription(true);
     setSelectedFile(null);
     setShowFileDropzone(false);
   };
 
+  // Ocultar la transcripción seleccionada
   const closeSelectedTranscription = () => {
     setShowTranscription(false);
   };
@@ -142,28 +135,28 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   };
 
   const value: SessionContextProps = {
-    toggleSignOutOptions,
-    userSignOut,
-    handleClickOutside,
-    signOutRef,
-    showSignOutOption,
-    supabaseClient,
-    showTranscriptionsList,
-    toggleTranscriptionsList,
     showMenu,
+    toggleShowMenu,
     setShowMenu,
     showTranscription,
-    closeSelectedTranscription,
     setShowTranscription,
     showSelectedTranscription,
-    toggleShowMenu,
+    closeSelectedTranscription,
+    showTranscriptionsList,
+    toggleTranscriptionsList,
     showFileDropzone,
     toggleShowFileDropzone,
     selectedFile,
     setSelectedFile,
     closeFilePreview,
-    setUser,
     user,
+    signOutRef,
+    showSignOutOption,
+    supabaseClient,
+    setUser,
+    handleClickOutside,
+    userSignOut,
+    toggleSignOutOptions,
   };
 
   return (

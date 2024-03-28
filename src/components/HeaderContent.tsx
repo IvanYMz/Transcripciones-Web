@@ -1,11 +1,16 @@
 import NewTranscipt from "../icons/NewTranscript";
 import History from "../icons/History";
 import MenuIcon from "../icons/MenuIcon";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "../../services/Context/SessionContext";
 import { useNavigate } from 'react-router-dom';
+import type { User } from "../../services/Context/SessionContext";
 
-export default function HeaderContent() {
+interface HeaderContentProps {
+    user: User;
+}
+
+export default function HeaderContent({ user }: HeaderContentProps) {
     const navigate = useNavigate();
     const {
         handleClickOutside,
@@ -19,8 +24,6 @@ export default function HeaderContent() {
         showMenu,
         closeFilePreview,
         closeSelectedTranscription,
-        supabaseClient,
-        user,
     } = useSession();
 
     const goToSignIn = () => {
@@ -66,7 +69,7 @@ export default function HeaderContent() {
                                 <span>Transcripciones</span><History width={15} height={15} />
                             </button>
                         )}
-                        {user.role === 'authenticated' ? (
+                        {user.role === 1 /*1 === authenticated*/ ? (
                             <>
                                 {showSignOutOption && (
                                     <div ref={signOutRef} className="absolute right-10 top-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">

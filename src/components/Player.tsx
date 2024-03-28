@@ -11,19 +11,27 @@ interface PlayerProps {
 }
 
 export default function Player({ closeFilePreview, selectedFile, supabaseClient, user }: PlayerProps) {
+    // Subir archivo a supabase para ser transcrito
     const uploadFile = async () => {
-        console.log(user);
         if (selectedFile) {
-            const nombreArchivoConExtension: string = selectedFile.name;
-            const ultimoPuntoIndex: number = nombreArchivoConExtension.lastIndexOf('.');
-            const nombreArchivoSinExtension: string = ultimoPuntoIndex !== -1 ? nombreArchivoConExtension.substring(0, ultimoPuntoIndex) : nombreArchivoConExtension;
-            const { data, error } = await supabaseClient.storage
-                .from('bucketsazo')
-                .upload(user.id + '/' + nombreArchivoSinExtension + '/' + selectedFile.name, selectedFile)
-            if (error) {
-                console.error(error);
-            } 
-            console.log(data);
+            const nombreArchivoConExtension = selectedFile.name;
+            const ultimoPuntoIndex = nombreArchivoConExtension.lastIndexOf('.');
+            const nombreArchivoSinExtension = ultimoPuntoIndex !== -1 ? nombreArchivoConExtension.substring(0, ultimoPuntoIndex) : nombreArchivoConExtension;
+
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('bucketsazo')
+                    .upload(user.id + '/' + nombreArchivoSinExtension + '/' + selectedFile.name, selectedFile);
+
+                if (error) {
+                    throw error;
+                }
+
+                console.log("Archivo subido correctamente:", data);
+            } catch (error) {
+                console.error("Error al subir el archivo:", error);
+                // Aquí puedes manejar el error de acuerdo a tus necesidades
+            }
         }
     };
 

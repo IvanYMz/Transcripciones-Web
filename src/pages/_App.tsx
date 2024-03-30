@@ -8,7 +8,7 @@ import MainContent from "../components/MainContent";
 import { useEffect } from "react";
 
 export default function App() {
-    const { supabaseClient, user, setUser, showTranscription } = useSession();
+    const { supabaseClient, user, setUser } = useSession();
 
     useEffect(() => {
         // Verificar si el usuario está autenticado para asignar sus datos

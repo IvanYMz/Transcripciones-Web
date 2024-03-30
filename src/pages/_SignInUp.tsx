@@ -32,12 +32,32 @@ export default function SignInUp() {
                 email_input_placeholder: 'ejemplo@algo.com',
                 password_label: 'Contraseña',
                 password_input_placeholder: 'Tu contraseña',
-                button_label: "Iniciar sesión"
+                button_label: "Iniciar sesión",
+                link_text: "¿Ya tienes cuenta? Inicia sesión",
             },
 
             sign_up: {
+                email_label: 'Correo electrónico',
+                email_input_placeholder: 'ejemplo@algo.com',
+                password_label: 'Contraseña',
+                password_input_placeholder: 'Tu contraseña',
+                button_label: "Registrarse",
+                link_text: '¿No tienes una cuenta? Regístrate'
+            },
 
-            }
+            forgotten_password: {
+                link_text: '¿Olvidaste tu contraseña?',
+                email_label: 'Correo electrónico',
+                email_input_placeholder: 'ejemplo@algo.com',
+                button_label: "Enviar instrucciones de recuperación",
+                loading_button_label: "Enviando instrucciones",
+                confirmation_text: 'Instrucciones enviadas correctamente',
+            },
+
+            email_label: {
+                link_text: '¿Olvidaste tu contraseña?'
+            },
+
         }
     };
 

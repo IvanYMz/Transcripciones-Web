@@ -8,7 +8,7 @@ interface AsideContentProps {
 }
 
 export default function AsideContent({ user }: AsideContentProps) {
-    const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, toggleShowMenu, showMenu,} = useSession();
+    const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, toggleShowMenu, showMenu, selectedTranscription} = useSession();
     return (
         <>
             {showTranscriptionsList ? (

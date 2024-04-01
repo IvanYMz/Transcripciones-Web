@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Player from './Player';
+import Player from './PlayerUpload';
 import { useSession } from '../../services/Context/SessionContext';
 import type { User } from '../../services/Context/SessionContext';
 

@@ -13,13 +13,14 @@ export interface User {
 
 // Props que se usarán en los componenetes
 interface SessionContextProps {
-
+  selectedTranscription: string | null;
+  setSelectedTranscription: React.Dispatch<React.SetStateAction<string | null>>;
   showMenu: boolean;
   toggleShowMenu: () => void;
   setShowMenu: (show: boolean) => void;
   showTranscription: boolean;
   setShowTranscription: (show: boolean) => void;
-  showSelectedTranscription: () => void;
+  showSelectedTranscription: (selectedTranscription: string) => void;
   closeSelectedTranscription: () => void;
   showTranscriptionsList: boolean;
   toggleTranscriptionsList: () => void;
@@ -60,6 +61,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [showSignOutOption, setShowSignOutOption] = useState(false); // Estado para mostrar y ocultar la opción de cerrar sesión
   const signOutRef = useRef<HTMLDivElement>(null); // Referencia para el click fuera de la opción de cerrar sesión
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
+  const [selectedTranscription, setSelectedTranscription] = useState<string | null>(null);
   const supabaseClient = supabase; // Acceso a supabase
   // Inicializar el usuario
   const [user, setUser] = useState<User>({
@@ -108,10 +110,11 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   };
 
   // Mostrar la transcripción seleccionada
-  const showSelectedTranscription = () => {
+  const showSelectedTranscription = (transcription: string) => {
     setShowTranscription(true);
     setSelectedFile(null);
     setShowFileDropzone(false);
+    setSelectedTranscription(transcription);
   };
 
   // Ocultar la transcripción seleccionada
@@ -135,6 +138,8 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   };
 
   const value: SessionContextProps = {
+    selectedTranscription,
+    setSelectedTranscription,
     showMenu,
     toggleShowMenu,
     setShowMenu,

@@ -3,23 +3,53 @@ import { SessionProvider } from "../../services/Context/SessionContext";
 import { useSession } from "../../services/Context/SessionContext";
 import type { User } from "../../services/Context/SessionContext";
 import FileDropZone from "./FileDropzone";
+import UploadIcon from "../icons/UploadIcon";
 
 interface MainContentProps {
     user: User;
 }
 
 export default function MainContent({ user, /*showTranscription*/ }: MainContentProps) {
-    const { showTranscription, selectedTranscription, supabaseClient, } = useSession();
+    const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription } = useSession();
     const [transcriptionURL, setTranscriptionURL] = useState<string | null>(null);
+    const [transcriptionText, setTranscriptionText] = useState('');
+
+    // Obtener el texto de la transcripción
+    const getTranscriptionText = async () => {
+        try {
+            const data = await supabaseClient.storage.from('bucketsazo').list(user.id + '/' + selectedTranscription);
+            if (data.data && data.data[1]) {
+                const fileName = data.data[1].name; // Usar el primer archivo en la lista
+                if (fileName) {
+                    const filePath = '/' + user.id + '/' + selectedTranscription + '/' + fileName;
+
+                    const { data, error } = await supabaseClient
+                        .storage
+                        .from('bucketsazo')
+                        .download(filePath)
+                    if (data) {
+                        const text = await data.text();
+                        setTranscriptionText(text);
+                    }
+                } else {
+                    console.log('El nombre del archivo no está definido.');
+                }
+            } else {
+                setTranscriptionText('');
+            }
+        } catch (error) {
+            console.log('', error);
+        }
+    };
 
     // Generar la url de supabase para la previsualización del audio
-    const createTranscriptionURL = async () => {
+    const createTranscriptionAudioURL = async () => {
         try {
             const data = await supabaseClient.storage.from('bucketsazo').list(user.id + '/' + selectedTranscription);
             if (data.data && data.data.length > 0) {
                 const fileName = data.data[0].name;
                 if (fileName) {
-                    const finalURL = await getURL(fileName); // Obtener la url completa
+                    const finalURL = await getAudioURL(fileName); // Obtener la url completa
                     if (finalURL) {
                         setTranscriptionURL(finalURL);
                     } else {
@@ -37,7 +67,7 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
     };
 
     // Concatenar el path para obtener la url final.
-    const getURL = async (fileName: string) => {
+    const getAudioURL = async (fileName: string) => {
         try {
             const filePath = '/' + user.id + '/' + selectedTranscription + '/' + fileName;
             //console.log('Ruta: ' + filePath);
@@ -54,20 +84,45 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
         }
     };
 
+    // Actualizar texto de la transcripción
+    const updateTranscriptionText = async () => {
+        console.log('Pendiente');
+        closeSelectedTranscription();
+    };
+
     useEffect(() => {
-        if(showTranscription) {
-            createTranscriptionURL();
+        if (showTranscription) {
+            createTranscriptionAudioURL();
+            getTranscriptionText();
         }
     }, [selectedTranscription]);
 
     return (
         <main className="[grid-area:main] bg-[#f5f5fa] dark:bg-[#212121] overflow-hidden">
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-full w-full">
                 {(showTranscription) ? (
-                    <section className="flex flex-col">
-                        <p>{selectedTranscription}</p>
-                        {transcriptionURL && <audio controls src={transcriptionURL} />}
-                    </section>
+                    <>
+                        {(transcriptionURL) && (
+                            <section className="flex flex-col gap-4 justify-center items-center">
+                                <h3>{selectedTranscription}</h3>
+                                <audio controls src={transcriptionURL} />
+                                {transcriptionText !== '' ? (
+                                    <div className="flex flex-col gap-4 w-full justify-center items-center">
+                                        <textarea className=" text-black w-full" value={transcriptionText} onChange={(e) => setTranscriptionText(e.target.value)}></textarea>
+                                        <button onClick={updateTranscriptionText} className="flex w-40 items-center justify-center font-semibold text-lg text-[#222] px-4 py-1 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
+                                            <UploadIcon />Actualizar
+                                        </button>
+                                    </div>) : (
+                                    <div className='flex flex-col text-center justify-center py-2 gap-2'>
+                                        <h2 className="text-xl font-bold">Transcripción en proceso</h2>
+                                        <p className="text-md font-thin">
+                                            Por favor, espere a que tengamos su transcripción lista
+                                        </p>
+                                    </div>
+                                )}
+                            </section>
+                        )}
+                    </>
                 ) : (
                     <SessionProvider>
                         <FileDropZone user={user} />

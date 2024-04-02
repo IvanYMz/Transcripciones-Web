@@ -79,7 +79,7 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                                 </p>
                                 {selectedTranscription === transcription && (
                                     <div ref={menuRef} className="absolute right-0 top-0 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg border border-[#fefefe] shadow-black z-10">
-                                        <button onClick={() => { showSelectedTranscription(selectedTranscription); if (showMenu) { toggleShowMenu(); }; }} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
+                                        <button onClick={() => { showSelectedTranscription(selectedTranscription); if (showMenu) { toggleShowMenu(); }; setSelectedTranscription(null)  }} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
                                             <span>Ver</span>
                                         </button>
                                         <button className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">

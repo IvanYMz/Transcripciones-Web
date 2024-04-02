@@ -27,6 +27,8 @@ export default function Player({ closeFilePreview, selectedFile, supabaseClient,
                     throw error;
                 }
 
+                closeFilePreview();
+
                 console.log("Archivo subido correctamente:", data);
             } catch (error) {
                 console.error("Error al subir el archivo:", error);
@@ -61,7 +63,7 @@ export default function Player({ closeFilePreview, selectedFile, supabaseClient,
                     </audio>
                 </div>
                 <footer className="flex items-center justify-center w-full">
-                    <button onClick={uploadFile} className="flex items-center justify-center font-semibold text-lg text-[#222] px-4 py-2 rounded-full bg-[#fefefe] hover:bg-[#171717] hover:shadow-white hover:text-[#fefefe] transition duration-300">
+                    <button onClick={uploadFile} className="flex items-center justify-center font-semibold text-lg text-[#222] px-4 py-2 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
                         <UploadIcon />Subir
                     </button>
                 </footer>

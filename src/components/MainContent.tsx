@@ -13,6 +13,7 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
     const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription } = useSession();
     const [transcriptionURL, setTranscriptionURL] = useState<string | null>(null);
     const [transcriptionText, setTranscriptionText] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     // Obtener el texto de la transcripción
     const getTranscriptionText = async () => {
@@ -52,6 +53,7 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
                     const finalURL = await getAudioURL(fileName); // Obtener la url completa
                     if (finalURL) {
                         setTranscriptionURL(finalURL);
+                        setIsLoading(false);
                     } else {
                         console.error('No se pudo obtener la URL.');
                     }
@@ -86,15 +88,33 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
 
     // Actualizar texto de la transcripción
     const updateTranscriptionText = async () => {
-        console.log('Pendiente');
-        closeSelectedTranscription();
+        try {
+            const filePath = '/' + user.id + '/' + selectedTranscription + '/' + selectedTranscription + '.txt';
+
+            // Actualizar el contenido del archivo de texto
+            const { error } = await supabaseClient.storage
+                .from('bucketsazo')
+                .update(filePath, transcriptionText)
+
+            if (!error) {
+                console.log('Archivo de texto actualizado exitosamente.');
+                closeSelectedTranscription();
+                // Realizar cualquier acción adicional necesaria después de la actualización
+            } else {
+                console.error('Error al actualizar el archivo de texto:', error);
+            }
+        } catch (error) {
+            console.error('Error al actualizar el archivo de texto:', error);
+        }
     };
+
 
     useEffect(() => {
         if (showTranscription) {
             createTranscriptionAudioURL();
             getTranscriptionText();
         }
+        setIsLoading(true);
     }, [selectedTranscription]);
 
     return (
@@ -102,14 +122,14 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
             <div className="flex justify-center items-center h-full w-full">
                 {(showTranscription) ? (
                     <>
-                        {(transcriptionURL) && (
-                            <section className="flex flex-col gap-4 justify-center items-center">
+                        {(transcriptionURL && !isLoading) ? (
+                            <section className="flex flex-col gap-6 justify-center items-center w-full h-4/5">
                                 <h3>{selectedTranscription}</h3>
                                 <audio controls src={transcriptionURL} />
                                 {transcriptionText !== '' ? (
-                                    <div className="flex flex-col gap-4 w-full justify-center items-center">
-                                        <textarea className=" text-black w-full" value={transcriptionText} onChange={(e) => setTranscriptionText(e.target.value)}></textarea>
-                                        <button onClick={updateTranscriptionText} className="flex w-40 items-center justify-center font-semibold text-lg text-[#222] px-4 py-1 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
+                                    <div className="flex flex-col gap-4 w-4/6 justify-center items-center h-1/2">
+                                        <textarea className="w-full bg-transparent resize-none p-4 border border-zinc-700 rounded-md h-full" value={transcriptionText} onChange={(e) => setTranscriptionText(e.target.value)}></textarea>
+                                        <button onClick={updateTranscriptionText} className="flex w-40 self-end items-center justify-center font-semibold text-lg text-[#222] px-4 py-1 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
                                             <UploadIcon />Actualizar
                                         </button>
                                     </div>) : (
@@ -121,6 +141,8 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
                                     </div>
                                 )}
                             </section>
+                        ) : (
+                            <div>Aguanta, prro</div>
                         )}
                     </>
                 ) : (

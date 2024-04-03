@@ -36,7 +36,34 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                 setTranscriptions(namesArray); // Establece el estado con los nombres
             }
         }
+    };
 
+    const getFilesToRemove = async () => {
+        const transcriptionFolderPath = user.id + '/' + selectedTranscription;
+        const { data, error } = await supabaseClient
+            .storage
+            .from('bucketsazo')
+            .list(transcriptionFolderPath)
+            
+            if (data) {
+                const files2Remove: string[] = data.map(item => transcriptionFolderPath + '/' + item.name);
+                return files2Remove;
+            }
+            return [];
+    };
+
+    const deleteTranscription = async () => {
+        if (user.role === 1 /*1 === authenticated*/ && selectedTranscription) {
+            const files2Remove = await getFilesToRemove();
+
+            const { data, error } = await supabaseClient
+                .storage
+                .from('bucketsazo')
+                .remove(files2Remove)
+            if(data) {
+                window.location.reload(); // Refrescar la página o el componente main y la lista?
+            }
+        }
     };
 
     // Función para manejar la selección de una transcripción
@@ -49,6 +76,11 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
             setSelectedTranscription(null);
         }
+    };
+
+    const cleanMainContent = () => {
+        if (showMenu) { toggleShowMenu(); }
+        setSelectedTranscription(null);
     };
 
     useEffect(() => {
@@ -79,14 +111,10 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                                 </p>
                                 {selectedTranscription === transcription && (
                                     <div ref={menuRef} className="absolute right-0 top-0 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg border border-[#fefefe] shadow-black z-10">
-                                        <button onClick={() => { showSelectedTranscription(selectedTranscription); if (showMenu) { toggleShowMenu(); }; setSelectedTranscription(null)  }} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
-                                            <span>Ver</span>
+                                        <button onClick={() => { showSelectedTranscription(selectedTranscription); cleanMainContent(); }} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
+                                            <span>Ver / Editar</span><EditIcon />
                                         </button>
-                                        <button className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
-                                            <span>Editar</span>
-                                            <EditIcon />
-                                        </button>
-                                        <button className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1 text-red-500">
+                                        <button onClick={deleteTranscription} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1 text-red-500">
                                             <span>Eliminar</span>
                                             <DeleteIcon />
                                         </button>

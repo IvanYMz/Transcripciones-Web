@@ -3,6 +3,7 @@ import { supabase } from "../Supabase/connection";
 
 import type { ReactNode } from 'react';
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 // Formato para el objeto user
 export interface User {
@@ -62,6 +63,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const signOutRef = useRef<HTMLDivElement>(null); // Referencia para el click fuera de la opción de cerrar sesión
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // Estado para la selección y previsualización de archivos
   const [selectedTranscription, setSelectedTranscription] = useState<string | null>(null);
+  const navigate = useNavigate();
   const supabaseClient = supabase; // Acceso a supabase
   // Inicializar el usuario
   const [user, setUser] = useState<User>({
@@ -69,11 +71,6 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     id: '',
     role: 0,
   });
-
-  // Recargar la página al cerrar sesión
-  const refreshMain = () => {
-    window.location.reload();
-  };
 
   // Cerrar sesión
   const userSignOut = async () => {
@@ -85,7 +82,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
           throw new Error(error.message);
         }
       }
-      refreshMain();
+      navigate('/');
     } catch (error) {
       console.error('Ocurrió un error al cerrar sesión:', error);
     }

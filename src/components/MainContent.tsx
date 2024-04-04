@@ -127,7 +127,7 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
                                 <h3>{selectedTranscription}</h3>
                                 <audio controls src={transcriptionURL} />
                                 {transcriptionText !== '' ? (
-                                    <div className="flex flex-col gap-4 w-4/6 justify-center items-center h-1/2">
+                                    <div className="flex flex-col gap-4 w-4/6 justify-center items-center h-3/5">
                                         <textarea className="w-full bg-transparent resize-none p-4 border border-zinc-700 rounded-md h-full" value={transcriptionText} onChange={(e) => setTranscriptionText(e.target.value)}></textarea>
                                         <button onClick={updateTranscriptionText} className="flex w-40 self-end items-center justify-center font-semibold text-lg text-[#222] px-4 py-1 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
                                             <UploadIcon />Actualizar

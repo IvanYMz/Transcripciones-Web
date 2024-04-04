@@ -124,15 +124,8 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                         ))}
                     </ul>
                 ) : (
-                    <div className='flex flex-col text-center justify-center h-full w-full px-2'>
-                        <h2 className="text-3xl font-bold mb-4">¡Inicia sesión!</h2>
-                        <p className="text-lg mb-2 font-normal">
-                            Regístrate para guardar tus transcripciones. ¡Es grátis!
-                        </p>
-                        <p className="text-md mb-2 font-thin">
-                            Aún puedes transcribir tus audios 😉
-                        </p>
-                    </div>
+                        <>
+                        </>
                 )}
                 <></>
             </section>

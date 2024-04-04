@@ -7,8 +7,8 @@ const AppRoutes = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<SessionProvider><App /></SessionProvider>} /> {/* Ruta por defecto */}
-                <Route path="/inicioSesion" element={<SessionProvider><SignInUp /></SessionProvider>} />
+                <Route path="/" element={<SessionProvider><SignInUp /></SessionProvider>} />{/* Ruta por defecto */}
+                <Route path="/App" element={<SessionProvider><App /></SessionProvider>} />
             </Routes>
         </Router>
     );

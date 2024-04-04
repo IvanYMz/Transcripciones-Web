@@ -69,20 +69,14 @@ export default function HeaderContent({ user }: HeaderContentProps) {
                                 <span>Transcripciones</span><History width={15} height={15} />
                             </button>
                         )}
-                        {user.role === 1 /*1 === authenticated*/ ? (
-                            <>
-                                {showSignOutOption && (
-                                    <div ref={signOutRef} className="absolute right-10 top-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">
-                                        <button onClick={userSignOut} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
-                                            <span>Cerrar sesión</span>
-                                        </button>
-                                    </div>
-                                )}
-                                <button onClick={toggleSignOutOptions} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">{user.email}</button>
-                            </>
-                        ) : (
-                            <button onClick={goToSignIn} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">Acceder</button>
+                        {showSignOutOption && (
+                            <div ref={signOutRef} className="absolute right-10 top-10 mt-2 w-40 bg-[#333] rounded-lg p-2 flex flex-col gap-y-1 shadow-lg shadow-black z-10">
+                                <button onClick={userSignOut} className="flex items-center gap-4 hover:bg-[#444] rounded-lg px-2 py-1">
+                                    <span>Cerrar sesión</span>
+                                </button>
+                            </div>
                         )}
+                        <button onClick={toggleSignOutOptions} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">{user.email}</button>
                     </section>
                     {!showMenu && (
                         <button onClick={toggleShowMenu} className="menu-icon-button hidden hover:bg-[#333] rounded-lg p-2" title="Menú desplegable">

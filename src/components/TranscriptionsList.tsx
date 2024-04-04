@@ -19,51 +19,54 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
 
     // Enlistar las transcripciones del usuario (****ENCONTRAR LA MEJOR FORMA Y EL MEJOR LUGAR PARA CARGAR ESTO****) 
     const fetchUserTranscripts = async () => {
-        if (user.role === 1 /*1 === authenticated*/) {
-            const { data, error } = await supabaseClient
-                .storage
-                .from('bucketsazo')
-                .list(user.id, {
-                    limit: 100,
-                    offset: 0,
-                    sortBy: { column: 'name', order: 'asc' },
-                });
-
-            //console.error(error);
-
-            if (data) {
-                const namesArray: string[] = data.map(item => item.name);
-                setTranscriptions(namesArray); // Establece el estado con los nombres
+        try {
+            if (user.id !== '') {
+                const { data, error } = await supabaseClient
+                    .storage
+                    .from('bucketsazo')
+                    .list(user.id, {
+                        limit: 100,
+                        offset: 0,
+                        sortBy: { column: 'name', order: 'asc' },
+                    });
+                if (data) {
+                    const namesArray: string[] = data.map(item => item.name);
+                    setTranscriptions(namesArray); // Establece el estado con los nombres
+                }
             }
-        }
+        } catch (error) { console.log(error) }
     };
 
     const getFilesToRemove = async () => {
-        const transcriptionFolderPath = user.id + '/' + selectedTranscription;
-        const { data, error } = await supabaseClient
-            .storage
-            .from('bucketsazo')
-            .list(transcriptionFolderPath)
-            
+        try {
+            const transcriptionFolderPath = user.id + '/' + selectedTranscription;
+            const { data, error } = await supabaseClient
+                .storage
+                .from('bucketsazo')
+                .list(transcriptionFolderPath)
+
             if (data) {
                 const files2Remove: string[] = data.map(item => transcriptionFolderPath + '/' + item.name);
                 return files2Remove;
             }
-            return [];
+        } catch (error) { console.log(error) }
+        return [];
     };
 
     const deleteTranscription = async () => {
-        if (user.role === 1 /*1 === authenticated*/ && selectedTranscription) {
-            const files2Remove = await getFilesToRemove();
+        try {
+            if (selectedTranscription) {
+                const files2Remove = await getFilesToRemove();
 
-            const { data, error } = await supabaseClient
-                .storage
-                .from('bucketsazo')
-                .remove(files2Remove)
-            if(data) {
-                window.location.reload(); // Refrescar la página o el componente main y la lista?
+                const { data, error } = await supabaseClient
+                    .storage
+                    .from('bucketsazo')
+                    .remove(files2Remove)
+                if (data) {
+                    window.location.reload();
+                }
             }
-        }
+        } catch (error) { console.log(error) }
     };
 
     // Función para manejar la selección de una transcripción
@@ -98,8 +101,8 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
     return (
         <div className="text-[#fefefe] flex flex-col justify-between h-full shadow-xl">
             <section className="h-full overflow-y-auto pr-1 p-2">
-                {(user.role === 1 /*1 === authenticated*/) ? (
-                    <ul className="flex flex-col gap-2 pr-2 h-full">
+                {transcriptions.length > 0 && (
+                    <ul className="flex flex-col gap-2 pr-2 h-full animate-fade-in-right animate-delay-300">
                         {transcriptions.map((transcription, index) => (
                             <li key={index} className="relative">
                                 <p
@@ -123,9 +126,6 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                             </li>
                         ))}
                     </ul>
-                ) : (
-                        <>
-                        </>
                 )}
                 <></>
             </section>

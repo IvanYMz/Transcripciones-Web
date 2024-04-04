@@ -3,7 +3,6 @@ import History from "../icons/History";
 import MenuIcon from "../icons/MenuIcon";
 import { useEffect } from "react";
 import { useSession } from "../../services/Context/SessionContext";
-import { useNavigate } from 'react-router-dom';
 import type { User } from "../../services/Context/SessionContext";
 
 interface HeaderContentProps {
@@ -11,7 +10,6 @@ interface HeaderContentProps {
 }
 
 export default function HeaderContent({ user }: HeaderContentProps) {
-    const navigate = useNavigate();
     const {
         handleClickOutside,
         showSignOutOption,
@@ -25,10 +23,6 @@ export default function HeaderContent({ user }: HeaderContentProps) {
         closeFilePreview,
         closeSelectedTranscription,
     } = useSession();
-
-    const goToSignIn = () => {
-        navigate('inicioSesion')
-    };
 
     // Agregar el listener para cerrar el menú cuando se hace clic fuera de él
     useEffect(() => {
@@ -79,7 +73,7 @@ export default function HeaderContent({ user }: HeaderContentProps) {
                         <button onClick={toggleSignOutOptions} type="button" className="hover:bg-[#333] rounded-lg px-2 py-1">{user.email}</button>
                     </section>
                     {!showMenu && (
-                        <button onClick={toggleShowMenu} className="menu-icon-button hidden hover:bg-[#333] rounded-lg p-2" title="Menú desplegable">
+                        <button onClick={toggleShowMenu} className="animate-blink menu-icon-button hidden hover:bg-[#333] rounded-lg p-2" title="Menú desplegable">
                             <span className="sr-only">Abrir menú desplegable</span>
                             <MenuIcon />
                         </button>

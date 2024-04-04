@@ -13,12 +13,12 @@ interface PlayerProps {
 export default function Player({ closeFilePreview, selectedFile, supabaseClient, user }: PlayerProps) {
     // Subir archivo a supabase para ser transcrito
     const uploadFile = async () => {
-        if (selectedFile) {
-            const nombreArchivoConExtension = selectedFile.name;
-            const ultimoPuntoIndex = nombreArchivoConExtension.lastIndexOf('.');
-            const nombreArchivoSinExtension = ultimoPuntoIndex !== -1 ? nombreArchivoConExtension.substring(0, ultimoPuntoIndex) : nombreArchivoConExtension;
+        try {
+            if (selectedFile) {
+                const nombreArchivoConExtension = selectedFile.name;
+                const ultimoPuntoIndex = nombreArchivoConExtension.lastIndexOf('.');
+                const nombreArchivoSinExtension = ultimoPuntoIndex !== -1 ? nombreArchivoConExtension.substring(0, ultimoPuntoIndex) : nombreArchivoConExtension;
 
-            try {
                 const { data, error } = await supabaseClient.storage
                     .from('bucketsazo')
                     .upload(user.id + '/' + nombreArchivoSinExtension + '/' + selectedFile.name, selectedFile);
@@ -26,14 +26,11 @@ export default function Player({ closeFilePreview, selectedFile, supabaseClient,
                 if (error) {
                     throw error;
                 }
-
                 closeFilePreview();
-
                 console.log("Archivo subido correctamente:", data);
-            } catch (error) {
-                console.error("Error al subir el archivo:", error);
-                // Aquí puedes manejar el error de acuerdo a tus necesidades
             }
+        } catch (error) {
+            console.error("Error al subir el archivo:", error);
         }
     };
 
@@ -45,7 +42,7 @@ export default function Player({ closeFilePreview, selectedFile, supabaseClient,
 
     return (
         <div className='flex w-full h-full items-center justify-center sm:w-1/2'>
-            <section className="w-4/5 h-3/5 flex flex-col justify-center gap-y-7">
+            <section className="w-4/5 h-3/5 flex flex-col justify-center gap-y-7 animate-fade-in-left">
                 <h2 className="text-center text-3xl font-bold mb-6">Previsualización de archivo</h2>
                 <header className="flex flex-col">
                     <button

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { SessionProvider } from "../../services/Context/SessionContext";
 import { useSession } from "../../services/Context/SessionContext";
-import type { User } from "../../services/Context/SessionContext";
 import FileDropZone from "./FileDropzone";
 import UploadIcon from "../icons/UploadIcon";
+import type { User } from "../../services/Context/SessionContext";
 
 interface MainContentProps {
     user: User;
 }
 
-export default function MainContent({ user, /*showTranscription*/ }: MainContentProps) {
-    const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription } = useSession();
+export default function MainContent({ user }: MainContentProps) {
+    const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription, showFileDropzone, setShowFileDropzone, closeFilePreview } = useSession();
     const [transcriptionURL, setTranscriptionURL] = useState<string | null>(null);
     const [transcriptionText, setTranscriptionText] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -123,11 +123,11 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
                 {(showTranscription) ? (
                     <>
                         {(transcriptionURL && !isLoading) ? (
-                            <section className="flex flex-col gap-6 justify-center items-center w-full h-4/5">
+                            <section className="flex flex-col gap-6 justify-center items-center w-full h-4/5 animate-slide-in-right">
                                 <h3>{selectedTranscription}</h3>
                                 <audio controls src={transcriptionURL} />
                                 {transcriptionText !== '' ? (
-                                    <div className="flex flex-col gap-4 w-4/6 justify-center items-center h-3/5">
+                                    <div className="flex flex-col gap-4 w-4/6 justify-center items-center h-3/5 animate-fade-in">
                                         <textarea className="w-full bg-transparent resize-none p-4 border border-zinc-700 rounded-md h-full" value={transcriptionText} onChange={(e) => setTranscriptionText(e.target.value)}></textarea>
                                         <button onClick={updateTranscriptionText} className="flex w-40 self-end items-center justify-center font-semibold text-lg text-[#222] px-4 py-1 rounded-full bg-[#fefefe] hover:bg-black hover:text-[#fefefe] transition duration-300">
                                             <UploadIcon />Actualizar
@@ -142,12 +142,17 @@ export default function MainContent({ user, /*showTranscription*/ }: MainContent
                                 )}
                             </section>
                         ) : (
-                            <div>Aguanta, prro</div>
+                            <div>, prro</div>
                         )}
                     </>
                 ) : (
                     <SessionProvider>
-                        <FileDropZone user={user} />
+                        <FileDropZone
+                            user={user}
+                            setShowFileDropzone={setShowFileDropzone}
+                            showFileDropzone={showFileDropzone}
+                            closeFilePreview={closeFilePreview}
+                        />
                     </SessionProvider>
                 )}
             </div>

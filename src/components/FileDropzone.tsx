@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Player from './PlayerUpload';
 import { useSession } from '../../services/Context/SessionContext';
 import type { User } from '../../services/Context/SessionContext';
 
 interface FileDropZoneprops {
   user: User;
+  showFileDropzone: boolean;
+  setShowFileDropzone: (show: boolean) => void;
+  closeFilePreview: () => void;
 }
 
-const FileDropZone = ({ user }: FileDropZoneprops) => {
+const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePreview }: FileDropZoneprops) => {
   const {
-    toggleShowFileDropzone, showFileDropzone,
-    setSelectedFile, selectedFile, closeFilePreview,
-    supabaseClient, } = useSession();
+    setSelectedFile,
+    selectedFile,
+    supabaseClient,
+  } = useSession();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const allowedExtensions: string[] = ['mp3', 'mp4', 'opus', 'awv'];
 
+  // Manejador de cambio de archivo al seleccionar desde el explorador de archivos
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -31,6 +36,7 @@ const FileDropZone = ({ user }: FileDropZoneprops) => {
     }
   };
 
+  // Manejador de evento al soltar un archivo sobre la zona de drop
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
@@ -49,21 +55,25 @@ const FileDropZone = ({ user }: FileDropZoneprops) => {
     }
   };
 
+  // Selección de un archivo arrastrado sobre la zona de drop
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
   };
 
+  // Manejar el evento al alejar el archivo de la zona de drop
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
   };
 
+  // Cargar el archivo seleccionado o arrastrado
   const loadFile = (file: File) => {
-    toggleShowFileDropzone();
+    setShowFileDropzone(false);
     setSelectedFile(file);
   };
 
+  // Manejar error al subir el archivo
   const showError = (message: string) => {
     alert(message);
   };
@@ -79,7 +89,7 @@ const FileDropZone = ({ user }: FileDropZoneprops) => {
           // onDragOver para permitir el drop
           onDragOver={(e) => e.preventDefault()}
         >
-          <div className="text-center relative px-2">
+          <div className="text-center relative px-2 animate-blink">
             <h2 className="text-4xl font-bold mb-4">Transcribir Audio</h2>
             <p className="text-lg mb-6 font-normal">
               Sube tus archivos de audio y obtén transcripciones. Rápido y fácil.

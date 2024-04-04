@@ -8,11 +8,11 @@ interface AsideContentProps {
 }
 
 export default function AsideContent({ user }: AsideContentProps) {
-    const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, toggleShowMenu, showMenu, selectedTranscription} = useSession();
+    const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, toggleShowMenu, showMenu } = useSession();
     return (
         <>
             {showTranscriptionsList ? (
-                <aside className="[grid-area:aside] transcriptions-list flex flex-col mt-6 mr-6 overflow-y-auto">
+                <aside className="[grid-area:aside] transcriptions-list flex flex-col mt-6 mr-6 overflow-y-auto animate-fade-in-down">
                     {/* Cerrar historial de transcripciones */}
                     <header className="flex flex-row justify-between items-center p-2 text-slate-200">
                         <h3 className="text-sm">Historial de transcripciones</h3>
@@ -23,18 +23,15 @@ export default function AsideContent({ user }: AsideContentProps) {
                     </header>
                     {/* Lista de transcripciones */}
                     <section className="dark:bg-[#171717] rounded-lg w-full h-3/4">
-                            <TranscriptionsList 
-                            user={user} 
-                            showSelectedTranscription={showSelectedTranscription} 
+                        <TranscriptionsList
+                            user={user}
+                            showSelectedTranscription={showSelectedTranscription}
                             toggleShowMenu={toggleShowMenu}
                             showMenu={showMenu}
-                            />
+                        />
                     </section>
                 </aside>
-            ) : (
-                <></>
-            )}
+            ) : (<></>)}
         </>
-
     );
 };

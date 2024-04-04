@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 export interface User {
   email: string | undefined;
   id: string;
-  role: number;
 }
 
 // Props que se usarán en los componenetes
@@ -26,6 +25,7 @@ interface SessionContextProps {
   showTranscriptionsList: boolean;
   toggleTranscriptionsList: () => void;
   showFileDropzone: boolean;
+  setShowFileDropzone: (show: boolean) => void;
   toggleShowFileDropzone: () => void;
   selectedFile: File | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
@@ -69,7 +69,6 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [user, setUser] = useState<User>({
     email: '',
     id: '',
-    role: 0,
   });
 
   // Cerrar sesión
@@ -82,7 +81,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
           throw new Error(error.message);
         }
       }
-      navigate('/');
+      navigate('/SignIn');
     } catch (error) {
       console.error('Ocurrió un error al cerrar sesión:', error);
     }
@@ -117,6 +116,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   // Ocultar la transcripción seleccionada
   const closeSelectedTranscription = () => {
     setShowTranscription(false);
+    setSelectedTranscription(null);
   };
 
   // Manejar el cambio de estado para mostrar y ocultar la lista de transcripciones
@@ -147,6 +147,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     showTranscriptionsList,
     toggleTranscriptionsList,
     showFileDropzone,
+    setShowFileDropzone,
     toggleShowFileDropzone,
     selectedFile,
     setSelectedFile,

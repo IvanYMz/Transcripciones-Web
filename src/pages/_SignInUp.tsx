@@ -8,9 +8,10 @@ export default function SignInUp() {
     const { supabaseClient, } = useSession();
     const navigate = useNavigate();
 
+    // Verificar el inicio de sesión
     supabaseClient.auth.onAuthStateChange(async (event) => {
         if (event === 'SIGNED_IN') {
-            navigate("/App")
+            navigate("/")
         }
     });
 
@@ -62,7 +63,7 @@ export default function SignInUp() {
     };
 
     return (
-        <div className='absolute z-10 h-full w-full flex justify-center items-center bg-[#212121] flex-col gap-6'>
+        <div className='animate-fade-in absolute z-10 h-full w-full flex justify-center items-center bg-[#212121] flex-col gap-6 transition duration-700'>
             <div className='flex flex-col text-center justify-center w-full px-2 text-[#fefefe]'>
                 <h2 className="text-3xl font-bold ">¡Inicia sesión!</h2>
                 <p className="text-lg font-normal">

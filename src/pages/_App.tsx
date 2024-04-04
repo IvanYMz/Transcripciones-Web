@@ -6,14 +6,17 @@ import AsideContent from "../components/AsideContent";
 import DropdownMenu from "../components/DropdownMenu";
 import MainContent from "../components/MainContent";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function App() {
     const { supabaseClient, user, setUser } = useSession();
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Verificar si el usuario está autenticado para asignar sus datos
         const getSupabaseUser = async () => {
             let session = await supabaseClient.auth.getSession();
+            if(session.data.session === null) { navigate('/SignIn'); }
             try {
                 if (session.data.session) {
                     let loggedUser = await supabaseClient.auth.getUser();
@@ -21,7 +24,6 @@ export default function App() {
                         setUser({
                             email: loggedUser.data.user.email,
                             id: loggedUser.data.user.id,
-                            role: 1
                         });
                     }
                 }
@@ -35,15 +37,15 @@ export default function App() {
 
     return (
         <SessionProvider>
-            <div className="app-container dark:text-[#fefefe]">
+            <div className="app-container dark:text-[#fefefe] animate-fade-in">
                 {/* Header */}
-                <HeaderContent user={user} />
+                <HeaderContent user={user}/>
                 {/* Sección relacionada con la lista de transcripciones */}
                 <AsideContent user={user} />
                 {/* Menú desplegable */}
                 <DropdownMenu user={user} />
                 {/* Contenido principal */}
-                <MainContent user={user} /*showTranscription={showTranscription}*/ />
+                <MainContent user={user} />
             </div>
         </SessionProvider>
     );

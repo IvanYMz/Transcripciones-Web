@@ -7,10 +7,11 @@ interface FileDropZoneprops {
   user: User;
   showFileDropzone: boolean;
   setShowFileDropzone: (show: boolean) => void;
+  setRefreshTranscriptionsList: (show: boolean) => void;
   closeFilePreview: () => void;
 }
 
-const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePreview }: FileDropZoneprops) => {
+const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePreview, setRefreshTranscriptionsList}: FileDropZoneprops) => {
   const {
     setSelectedFile,
     selectedFile,
@@ -111,7 +112,12 @@ const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePr
         </div>
       )}
       {(selectedFile && !showFileDropzone) && (
-        <Player closeFilePreview={closeFilePreview} selectedFile={selectedFile} supabaseClient={supabaseClient} user={user} />
+        <Player 
+        closeFilePreview={closeFilePreview} 
+        setRefreshTranscriptionsList={setRefreshTranscriptionsList}
+        selectedFile={selectedFile} 
+        supabaseClient={supabaseClient} 
+        user={user} />
       )}
     </div>
   );

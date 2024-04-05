@@ -5,9 +5,10 @@ import type { User } from "../../services/Context/SessionContext";
 
 interface AsideContentProps {
     user: User;
+    refreshTranscriptionsList: boolean;
 }
 
-export default function AsideContent({ user }: AsideContentProps) {
+export default function AsideContent({ user, refreshTranscriptionsList }: AsideContentProps) {
     const { toggleTranscriptionsList, showTranscriptionsList, showSelectedTranscription, toggleShowMenu, showMenu } = useSession();
     return (
         <>
@@ -28,6 +29,7 @@ export default function AsideContent({ user }: AsideContentProps) {
                             showSelectedTranscription={showSelectedTranscription}
                             toggleShowMenu={toggleShowMenu}
                             showMenu={showMenu}
+                            refreshTranscriptionsList={refreshTranscriptionsList}
                         />
                     </section>
                 </aside>

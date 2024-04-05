@@ -5,18 +5,21 @@ import HeaderContent from "../components/HeaderContent";
 import AsideContent from "../components/AsideContent";
 import DropdownMenu from "../components/DropdownMenu";
 import MainContent from "../components/MainContent";
-import { useEffect } from "react";
+import Notification from "../components/Notification";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function App() {
     const { supabaseClient, user, setUser } = useSession();
+    const [refreshTranscriptionsList, setRefreshTranscriptionsList] = useState(false);
+    const [transcriptionReady, setTranscriptionReady] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         // Verificar si el usuario está autenticado para asignar sus datos
         const getSupabaseUser = async () => {
             let session = await supabaseClient.auth.getSession();
-            if(session.data.session === null) { navigate('/SignIn'); }
+            if (session.data.session === null) { navigate('/SignIn'); }
             try {
                 if (session.data.session) {
                     let loggedUser = await supabaseClient.auth.getUser();
@@ -38,14 +41,15 @@ export default function App() {
     return (
         <SessionProvider>
             <div className="app-container dark:text-[#fefefe] animate-fade-in">
+                {transcriptionReady && <Notification />}
                 {/* Header */}
-                <HeaderContent user={user}/>
+                <HeaderContent user={user} />
                 {/* Sección relacionada con la lista de transcripciones */}
-                <AsideContent user={user} />
+                <AsideContent user={user} refreshTranscriptionsList={refreshTranscriptionsList} />
                 {/* Menú desplegable */}
-                <DropdownMenu user={user} />
+                <DropdownMenu user={user} refreshTranscriptionsList={refreshTranscriptionsList} />
                 {/* Contenido principal */}
-                <MainContent user={user} />
+                <MainContent user={user} setRefreshTranscriptionsList={setRefreshTranscriptionsList} />
             </div>
         </SessionProvider>
     );

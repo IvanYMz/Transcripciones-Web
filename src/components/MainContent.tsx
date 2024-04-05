@@ -7,9 +7,10 @@ import type { User } from "../../services/Context/SessionContext";
 
 interface MainContentProps {
     user: User;
+    setRefreshTranscriptionsList: (show: boolean) => void;
 }
 
-export default function MainContent({ user }: MainContentProps) {
+export default function MainContent({ user, setRefreshTranscriptionsList }: MainContentProps) {
     const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription, showFileDropzone, setShowFileDropzone, closeFilePreview } = useSession();
     const [transcriptionURL, setTranscriptionURL] = useState<string | null>(null);
     const [transcriptionText, setTranscriptionText] = useState('');
@@ -136,7 +137,7 @@ export default function MainContent({ user }: MainContentProps) {
                                     <div className='flex flex-col text-center justify-center py-2 gap-2'>
                                         <h2 className="text-xl font-bold">Transcripción en proceso</h2>
                                         <p className="text-md font-thin">
-                                            Por favor, espere a que tengamos su transcripción lista
+                                            Por favor, espere mientras tenemos su transcripción lista
                                         </p>
                                     </div>
                                 )}
@@ -152,6 +153,7 @@ export default function MainContent({ user }: MainContentProps) {
                             setShowFileDropzone={setShowFileDropzone}
                             showFileDropzone={showFileDropzone}
                             closeFilePreview={closeFilePreview}
+                            setRefreshTranscriptionsList={setRefreshTranscriptionsList}
                         />
                     </SessionProvider>
                 )}

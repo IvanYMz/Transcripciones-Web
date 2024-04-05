@@ -6,9 +6,10 @@ import type { User } from "../../services/Context/SessionContext";
 
 interface DropdownMenuProps {
     user: User;
+    refreshTranscriptionsList: boolean;
 }
 
-export default function DropdownMenu({ user }: DropdownMenuProps) {
+export default function DropdownMenu({ user, refreshTranscriptionsList }: DropdownMenuProps) {
     const {
         showSelectedTranscription,
         toggleShowMenu,
@@ -61,6 +62,7 @@ export default function DropdownMenu({ user }: DropdownMenuProps) {
                                 showSelectedTranscription={showSelectedTranscription}
                                 toggleShowMenu={toggleShowMenu}
                                 showMenu={showMenu}
+                                refreshTranscriptionsList={refreshTranscriptionsList}
                             />
                         </section>
                         <footer className="flex justify-end">

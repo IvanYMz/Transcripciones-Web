@@ -7,11 +7,12 @@ import DeleteIcon from '../icons/DeleteIcon';
 interface TranscriptionsListProps {
     user: User;
     showMenu: boolean;
+    refreshTranscriptionsList: boolean;
     showSelectedTranscription: (selectedTranscription: string) => void;
     toggleShowMenu: () => void;
 }
 
-const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, showMenu, }: TranscriptionsListProps) => {
+const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, showMenu, refreshTranscriptionsList }: TranscriptionsListProps) => {
     const { supabaseClient } = useSession();
     const [transcriptions, setTranscriptions] = useState<string[]>([]);
     const [selectedTranscription, setSelectedTranscription] = useState<string | null>(null);
@@ -88,7 +89,7 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
 
     useEffect(() => {
         fetchUserTranscripts();
-    }, [user.id]);
+    }, [user.id, refreshTranscriptionsList]);
 
     // Agregar el listener para cerrar el menú cuando se hace clic fuera de él
     useEffect(() => {
@@ -100,8 +101,8 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
 
     return (
         <div className="text-[#fefefe] flex flex-col justify-between h-full shadow-xl">
-            <section className="h-full overflow-y-auto pr-1 p-2">
-                {transcriptions.length > 0 && (
+            <section className="h-full overflow-y-auto pr-2 p-4">
+                {transcriptions.length > 0 ? (
                     <ul className="flex flex-col gap-2 pr-2 h-full animate-fade-in-right animate-delay-300">
                         {transcriptions.map((transcription, index) => (
                             <li key={index} className="relative">
@@ -126,8 +127,13 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                             </li>
                         ))}
                     </ul>
+                ) : (
+                    <div className="flex flex-row gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#fefefe] animate-pulse animate-delay-100"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#fefefe] animate-pulse animate-delay-200"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#fefefe] animate-pulse animate-delay-300"></div>
+                    </div>
                 )}
-                <></>
             </section>
         </div>
     );

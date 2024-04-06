@@ -4,13 +4,15 @@ import { useSession } from "../../services/Context/SessionContext";
 import FileDropZone from "./FileDropzone";
 import UploadIcon from "../icons/UploadIcon";
 import type { User } from "../../services/Context/SessionContext";
+import type { Transcription } from "../pages/_App";
 
 interface MainContentProps {
     user: User;
+    sendMessageToAI: (transcription: Transcription) => void;
     setRefreshTranscriptionsList: (show: boolean) => void;
 }
 
-export default function MainContent({ user, setRefreshTranscriptionsList }: MainContentProps) {
+export default function MainContent({ user, setRefreshTranscriptionsList, sendMessageToAI }: MainContentProps) {
     const { showTranscription, selectedTranscription, supabaseClient, closeSelectedTranscription, showFileDropzone, setShowFileDropzone, closeFilePreview } = useSession();
     const [transcriptionURL, setTranscriptionURL] = useState<string | null>(null);
     const [transcriptionText, setTranscriptionText] = useState('');
@@ -143,7 +145,11 @@ export default function MainContent({ user, setRefreshTranscriptionsList }: Main
                                 )}
                             </section>
                         ) : (
-                            <div>, prro</div>
+                            <div className="flex flex-row gap-2">
+                                <div className="w-4 h-4 rounded-full bg-[#fefefe] animate-pulse animate-delay-0"></div>
+                                <div className="w-4 h-4 rounded-full bg-[#fefefe] animate-pulse animate-delay-100"></div>
+                                <div className="w-4 h-4 rounded-full bg-[#fefefe] animate-pulse animate-delay-150"></div>
+                            </div>
                         )}
                     </>
                 ) : (
@@ -154,6 +160,7 @@ export default function MainContent({ user, setRefreshTranscriptionsList }: Main
                             showFileDropzone={showFileDropzone}
                             closeFilePreview={closeFilePreview}
                             setRefreshTranscriptionsList={setRefreshTranscriptionsList}
+                            sendMessageToAI={sendMessageToAI}
                         />
                     </SessionProvider>
                 )}

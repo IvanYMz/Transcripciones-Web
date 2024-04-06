@@ -31,7 +31,9 @@ const TranscriptionsList = ({ user, showSelectedTranscription, toggleShowMenu, s
                         sortBy: { column: 'name', order: 'asc' },
                     });
                 if (data) {
-                    const namesArray: string[] = data.map(item => item.name);
+                    const namesArray: string[] = data
+                        .filter(item => item.name !== ".emptyFolderPlaceholder")
+                        .map(item => item.name);
                     setTranscriptions(namesArray); // Establece el estado con los nombres
                 }
             }

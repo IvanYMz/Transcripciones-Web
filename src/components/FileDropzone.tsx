@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Player from './PlayerUpload';
 import { useSession } from '../../services/Context/SessionContext';
 import type { User } from '../../services/Context/SessionContext';
+import type { Transcription } from '../pages/_App';
 
 interface FileDropZoneprops {
   user: User;
@@ -9,9 +10,10 @@ interface FileDropZoneprops {
   setShowFileDropzone: (show: boolean) => void;
   setRefreshTranscriptionsList: (show: boolean) => void;
   closeFilePreview: () => void;
+  sendMessageToAI: (transcription: Transcription) => void;
 }
 
-const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePreview, setRefreshTranscriptionsList}: FileDropZoneprops) => {
+const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePreview, setRefreshTranscriptionsList, sendMessageToAI }: FileDropZoneprops) => {
   const {
     setSelectedFile,
     selectedFile,
@@ -112,12 +114,13 @@ const FileDropZone = ({ user, setShowFileDropzone, showFileDropzone, closeFilePr
         </div>
       )}
       {(selectedFile && !showFileDropzone) && (
-        <Player 
-        closeFilePreview={closeFilePreview} 
-        setRefreshTranscriptionsList={setRefreshTranscriptionsList}
-        selectedFile={selectedFile} 
-        supabaseClient={supabaseClient} 
-        user={user} />
+        <Player
+          closeFilePreview={closeFilePreview}
+          setRefreshTranscriptionsList={setRefreshTranscriptionsList}
+          sendMessageToAI={sendMessageToAI}
+          selectedFile={selectedFile}
+          supabaseClient={supabaseClient}
+          user={user} />
       )}
     </div>
   );

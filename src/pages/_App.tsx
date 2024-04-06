@@ -6,14 +6,48 @@ import AsideContent from "../components/AsideContent";
 import DropdownMenu from "../components/DropdownMenu";
 import MainContent from "../components/MainContent";
 import Notification from "../components/Notification";
+import { SocketConnection } from "../../services/Socket/socket-connection";
+
+import { Socket } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+export interface Transcription {
+    id: string,
+    filename: string,
+};
 
 export default function App() {
     const { supabaseClient, user, setUser } = useSession();
     const [refreshTranscriptionsList, setRefreshTranscriptionsList] = useState(false);
     const [transcriptionReady, setTranscriptionReady] = useState(false);
+    const [transcriptionName, setTranscriptionName] = useState('');
+    const socketChiquito: Socket | null = SocketConnection();
     const navigate = useNavigate();
+
+    function sendMessageToAI(transcription: Transcription) {
+        if (socketChiquito) {
+            socketChiquito.emit('message', transcription);
+            setTranscriptionName(transcription.filename);
+        } else {
+            console.error('El socket aún no está conectado.');
+        }
+    };
+
+    const handleResponse = (data: string) => {
+        if (data !== '') {
+            setTranscriptionReady(true);
+            setRefreshTranscriptionsList(!transcriptionReady)
+        }
+    };
+
+    useEffect(() => {
+        if (socketChiquito) {
+            socketChiquito.on('response', (data: string) => {
+                handleResponse(data);
+            });
+        }
+    }, [socketChiquito]);
 
     useEffect(() => {
         // Verificar si el usuario está autenticado para asignar sus datos
@@ -41,7 +75,7 @@ export default function App() {
     return (
         <SessionProvider>
             <div className="app-container dark:text-[#fefefe] animate-fade-in">
-                {transcriptionReady && <Notification />}
+                {transcriptionReady && <Notification transcriptionName={transcriptionName} setTranscriptionReady={setTranscriptionReady} />}
                 {/* Header */}
                 <HeaderContent user={user} />
                 {/* Sección relacionada con la lista de transcripciones */}
@@ -49,7 +83,7 @@ export default function App() {
                 {/* Menú desplegable */}
                 <DropdownMenu user={user} refreshTranscriptionsList={refreshTranscriptionsList} />
                 {/* Contenido principal */}
-                <MainContent user={user} setRefreshTranscriptionsList={setRefreshTranscriptionsList} />
+                <MainContent user={user} setRefreshTranscriptionsList={setRefreshTranscriptionsList} sendMessageToAI={sendMessageToAI} />
             </div>
         </SessionProvider>
     );

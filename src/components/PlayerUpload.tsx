@@ -2,9 +2,11 @@ import CloseIcon from "../icons/CloseIcon";
 import UploadIcon from "../icons/UploadIcon";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { User } from "../../services/Context/SessionContext";
+import type { Transcription } from "../pages/_App";
 import { useState } from "react";
 
 interface PlayerProps {
+    sendMessageToAI: (transcription: Transcription) => void;
     closeFilePreview: () => void;
     setRefreshTranscriptionsList: (show: boolean) => void;
     selectedFile: File | null;
@@ -12,7 +14,7 @@ interface PlayerProps {
     user: User;
 }
 
-export default function Player({ closeFilePreview, selectedFile, supabaseClient, user, setRefreshTranscriptionsList }: PlayerProps) {
+export default function Player({ closeFilePreview, selectedFile, supabaseClient, user, setRefreshTranscriptionsList, sendMessageToAI }: PlayerProps) {
     const [isLoading, setIsLoading] = useState(false);
     // Subir archivo a supabase para ser transcrito
     const uploadFile = async () => {
@@ -30,14 +32,16 @@ export default function Player({ closeFilePreview, selectedFile, supabaseClient,
                 if (error) {
                     throw error;
                 }
+                const transcription = { id: user.id, filename: selectedFile.name }
                 setIsLoading(false);
                 setRefreshTranscriptionsList(true);
+                sendMessageToAI(transcription);
                 closeFilePreview();
-                // Servidor, we, ya está...
-                console.log("Archivo subido correctamente:", data);
             }
         } catch (error) {
             console.error("Error al subir el archivo:", error);
+            closeFilePreview();
+
         }
     };
 

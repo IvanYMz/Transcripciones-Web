@@ -37,7 +37,6 @@ export default function App() {
     const handleResponse = (data: string) => {
         if (data !== '') {
             setTranscriptionReady(true);
-            setRefreshTranscriptionsList(!transcriptionReady)
         }
     };
 

@@ -74,7 +74,7 @@ export default function App() {
 
     return (
         <SessionProvider>
-            <div className="app-container dark:text-[#fefefe] animate-fade-in">
+            <div className="app-container text-[#fefefe] animate-fade-in">
                 {transcriptionReady && <Notification transcriptionName={transcriptionName} setTranscriptionReady={setTranscriptionReady} />}
                 {/* Header */}
                 <HeaderContent user={user} />

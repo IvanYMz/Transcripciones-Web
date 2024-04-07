@@ -121,7 +121,7 @@ export default function MainContent({ user, setRefreshTranscriptionsList, sendMe
     }, [selectedTranscription]);
 
     return (
-        <main className="[grid-area:main] bg-[#f5f5fa] dark:bg-[#212121] overflow-hidden">
+        <main className="[grid-area:main] dark:bg-[#212121] overflow-hidden">
             <div className="flex justify-center items-center h-full w-full">
                 {(showTranscription) ? (
                     <>

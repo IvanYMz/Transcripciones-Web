@@ -23,7 +23,7 @@ export default function AsideContent({ user, refreshTranscriptionsList }: AsideC
                         </button>
                     </header>
                     {/* Lista de transcripciones */}
-                    <section className="dark:bg-[#171717] rounded-lg w-full h-3/4">
+                    <section className="bg-[#171717] rounded-lg w-full h-3/4">
                         <TranscriptionsList
                             user={user}
                             showSelectedTranscription={showSelectedTranscription}

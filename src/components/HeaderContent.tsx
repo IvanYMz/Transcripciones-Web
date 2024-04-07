@@ -45,7 +45,7 @@ export default function HeaderContent({ user }: HeaderContentProps) {
     }, [showTranscriptionsList]);
 
     return (
-        <header className="[grid-area:header] bg-white dark:bg-[#171717]">
+        <header className="[grid-area:header] bg-[#171717]">
             <div className="h-full flex justify-between items-center px-4">
                 {/* Nueva transcripción */}
                 <section>
